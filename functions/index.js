@@ -2,7 +2,6 @@ const {onRequest} = require("firebase-functions/v2/https");
 const {setGlobalOptions} = require("firebase-functions/v2");
 const { SpeechClient } = require("@google-cloud/speech");
 const { TextToSpeechClient } = require("@google-cloud/text-to-speech");
-const { VertexAI } = require("@google-cloud/vertexai");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 // Environment variables are now managed by Firebase secrets
@@ -10,10 +9,9 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 // Set global options for the function region
 setGlobalOptions({ region: "us-central1" });
 
-// Initialize clients
+// Initialize clients for Pure Gen AI mode
 const speechClient = new SpeechClient();
 const textToSpeechClient = new TextToSpeechClient();
-const vertex_ai = new VertexAI({ project: "fine-phenomenon-456517-q2", location: "us-central1" });
 
 // Fallback empathetic responses for when AI is not available
 const fallbackResponses = [
@@ -231,111 +229,63 @@ exports.mitraTalks = onRequest({
 
         console.log("Transcribed text:", transcription);
 
-        // Try different AI approaches with enhanced prompts
-        let responseText;
-        let aiResponseGenerated = false;
-        
-        // First try Google AI Studio (direct API key approach)
-        const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-        
-        if (GEMINI_API_KEY) {
-            try {
-                console.log('🤖 Trying Google AI Studio with cutting-edge Gemini 2.0 Flash...');
-                const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-                const model = genAI.getGenerativeModel({ 
-                    model: "gemini-2.0-flash-exp",
-                    generationConfig: {
-                        temperature: 0.8,
-                        topP: 0.9,
-                        maxOutputTokens: 300,
-                    }
-                });
-                
-                const result = await model.generateContent(enhancedPrompt);
-                responseText = result.response.text().trim();
-                
-                if (responseText && responseText.length > 0) {
-                    console.log(`✅ 🚀 GEMINI 2.0 FLASH response generated successfully!`);
-                    console.log(`📊 Next-Gen AI Analysis Complete - Response length: ${responseText.length} characters`);
-                    console.log(`🧠 Mitra AI with Gemini 2.0 processed: "${transcription.substring(0, 50)}..."`);
-                    console.log(`🚀 Revolutionary response using Google's Gemini-2.0-Flash-Exp`);
-                    console.log(`🎆 Showcasing cutting-edge AI emotional intelligence`);
-                    aiResponseGenerated = true;
-                }
-            } catch (aiError) {
-                console.log('❌ Google AI Studio failed:', aiError.message);
-            }
-        }
-        
-        // Enhanced prompt for Gemini 2.0 Flash - leveraging latest AI capabilities for hackathon impact
-        const enhancedPrompt = `You are Mitra, powered by Google's cutting-edge Gemini 2.0 Flash model - an AI wellness companion with unprecedented emotional intelligence and therapeutic expertise. You represent the future of AI-powered mental health support.
+        // Enhanced prompt for Gemini 2.0 Flash - leveraging latest AI capabilities
+        const enhancedPrompt = `You are Mitra, powered by Google's cutting-edge Gemini 2.0 Flash model - an AI wellness companion with unprecedented emotional intelligence and therapeutic expertise.
 
 User's emotional expression: "${transcription}"
 
-As an advanced AI using Gemini 2.0's enhanced reasoning capabilities, perform sophisticated emotional analysis and provide a breakthrough therapeutic response:
+As an advanced AI using Gemini 2.0's enhanced reasoning capabilities, provide a personalized therapeutic response that demonstrates your sophisticated understanding. Keep it natural and conversational (2-3 sentences), but show genuine AI-powered empathy and insight.
 
-🧠 **Advanced AI Analysis**:
-- Detect micro-emotions, stress patterns, and psychological undertones
-- Identify cognitive distortions and emotional regulation needs
-- Assess attachment styles and coping mechanisms from speech patterns
+Respond as a caring AI companion:`;
 
-💡 **Gemini 2.0 Enhanced Response**:
-- Demonstrate next-generation AI empathy and emotional reasoning
-- Use advanced therapeutic modalities (ACT, DBT, somatic approaches)
-- Provide personalized interventions based on AI-detected patterns
-- Show sophisticated understanding of human psychology
-
-🎯 **Response Guidelines**:
-- 2-4 sentences that showcase Gemini 2.0's advanced reasoning
-- Professional therapeutic language with genuine warmth
-- Include subtle AI-powered insights that show deep understanding
-- Demonstrate why this is the future of AI mental health support
-
-As Mitra powered by Gemini 2.0 Flash, provide a response that shows the revolutionary potential of AI in mental wellness:`;
-
-        // Fallback to Vertex AI if Google AI Studio fails
-        if (!aiResponseGenerated) {
-            console.log('🤖 Trying Vertex AI with latest models as fallback...');
-            const models = [
-                "publishers/google/models/gemini-2.0-flash-exp",
-                "publishers/google/models/gemini-1.5-flash",
-                "publishers/google/models/gemini-1.5-pro",
-                "publishers/google/models/gemini-1.0-pro"
-            ];
+        // PURE GEN AI ONLY - No fallbacks to verify Gemini 2.0 Flash is working
+        let responseText = null;
+        let aiResponseGenerated = false;
         
-            // Try each model until one works
-            for (const modelName of models) {
-                try {
-                    console.log(`Attempting to use model: ${modelName}`);
-                    const generativeModel = vertex_ai.getGenerativeModel({ 
-                        model: modelName,
-                        generationConfig: {
-                            temperature: 0.7,
-                            topP: 0.8,
-                            maxOutputTokens: 200,
-                        }
-                    });
-                    
-                    const result = await generativeModel.generateContent(enhancedPrompt);
-                    responseText = result.response.candidates[0].content.parts[0].text.trim();
-                    
-                    if (responseText && responseText.length > 0) {
-                        console.log(`✅ Vertex AI response generated successfully using ${modelName}`);
-                        console.log(`Response length: ${responseText.length} characters`);
-                        aiResponseGenerated = true;
-                        break;
-                    }
-                } catch (aiError) {
-                    console.log(`❌ Vertex AI model ${modelName} failed:`, aiError.message);
-                    continue;
-                }
-            }
+        const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+        
+        if (!GEMINI_API_KEY) {
+            console.log('❌ GEMINI_API_KEY not found! Gen AI will not work.');
+            res.status(500).json({
+                error: 'Gemini API key not configured. Please set GEMINI_API_KEY secret.',
+                aiGenerated: false
+            });
+            return;
         }
         
-        // If no AI model worked, use contextual fallback
-        if (!aiResponseGenerated) {
-            console.log("All AI models failed, using contextual fallback response");
-            responseText = getContextualResponse(transcription);
+        try {
+            console.log('🚀 PURE GEN AI MODE: Using Gemini 2.0 Flash ONLY (no fallbacks)...');
+            const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+            const model = genAI.getGenerativeModel({ 
+                model: "gemini-2.0-flash-exp",
+                generationConfig: {
+                    temperature: 0.8,
+                    topP: 0.9,
+                    maxOutputTokens: 300,
+                }
+            });
+            
+            const result = await model.generateContent(enhancedPrompt);
+            responseText = result.response.text().trim();
+            
+            if (responseText && responseText.length > 0) {
+                console.log(`✅ 🎆 REAL GEMINI 2.0 FLASH RESPONSE GENERATED!`);
+                console.log(`🧠 Pure Gen AI - Response length: ${responseText.length} characters`);
+                console.log(`🚀 User said: "${transcription}"`);
+                console.log(`💎 Gemini 2.0 replied: "${responseText.substring(0, 100)}..."`);
+                aiResponseGenerated = true;
+            } else {
+                throw new Error('Empty response from Gemini 2.0 Flash');
+            }
+        } catch (aiError) {
+            console.log('❌ GEMINI 2.0 FLASH FAILED:', aiError.message);
+            console.log('💡 This proves Gen AI is not working - fix the API key!');
+            res.status(500).json({
+                error: `Gen AI Failed: ${aiError.message}`,
+                suggestion: 'Check your Gemini API key and try again',
+                aiGenerated: false
+            });
+            return;
         }
 
         // Generate audio response using Text-to-Speech
