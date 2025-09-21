@@ -1,15 +1,67 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Mitra by Awaaz AI</title>
-    </head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mitra - Your Wellness Companion</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
 <body>
-    <h1>Welcome to Mitra</h1>
-    <p>The Awaaz AI local server is working!</p>
-    <button id="recordButton">Hold to Speak</button>
-    <p id="status">Press and hold the button to speak to Mitra.</p>
-    <h3>Mitra's Response:</h3>
-    <div id="responseContainer"></div>
-    <script src="app.js"></script>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-heart pulse"></i>
+                <h1>Mitra</h1>
+            </div>
+            <p class="tagline">Your empathetic wellness companion</p>
+        </header>
+
+        <!-- Main Interface -->
+        <main class="main-content">
+            <!-- Voice Interface -->
+            <div class="voice-interface">
+                <div class="microphone-container">
+                    <button id="recordButton" class="mic-button" aria-label="Hold to speak">
+                        <i class="fas fa-microphone"></i>
+                        <div class="pulse-ring"></div>
+                    </button>
+                </div>
+                
+                <div class="status-container">
+                    <p id="status" class="status-text">Press and hold the microphone to speak to Mitra</p>
+                    <div class="audio-visualizer" id="audioVisualizer">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Response Area -->
+            <div class="response-section">
+                <div class="response-header">
+                    <i class="fas fa-robot"></i>
+                    <h3>Mitra's Response</h3>
+                </div>
+                <div id="responseContainer" class="response-container">
+                    <div class="welcome-message">
+                        <p>Hello! I'm Mitra, here to listen and support you. Feel free to share what's on your mind.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Awaaz AI. Built with care for your wellbeing.</p>
+        </footer>
+    </div>
+
+    <script src="app.js?v=2025092113"></script>
 </body>
 </html>
