@@ -5,6 +5,8 @@ const { TextToSpeechClient } = require("@google-cloud/text-to-speech");
 const { VertexAI } = require("@google-cloud/vertexai");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
+// Environment variables are now managed by Firebase secrets
+
 // Set global options for the function region
 setGlobalOptions({ region: "us-central1" });
 
@@ -171,6 +173,7 @@ exports.mitraTalks = onRequest({
         cors: true,
         invoker: "public",
         serviceAccount: "mitra-function-runner@fine-phenomenon-456517-q2.iam.gserviceaccount.com",
+        secrets: ["GEMINI_API_KEY"],
     }, async (req, res) => {
     // The onRequest handler with `cors: true` automatically handles OPTIONS
     // preflight requests. We only need to handle the actual POST request.
@@ -228,54 +231,86 @@ exports.mitraTalks = onRequest({
 
         console.log("Transcribed text:", transcription);
 
-        // Try different AI models with enhanced prompts
+        // Try different AI approaches with enhanced prompts
         let responseText;
         let aiResponseGenerated = false;
         
-        const models = [
-            "publishers/google/models/gemini-1.5-flash",
-            "publishers/google/models/gemini-1.0-pro",
-            "publishers/google/models/text-bison"
-        ];
+        // First try Google AI Studio (direct API key approach)
+        const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
         
-        const enhancedPrompt = `You are Mitra, a compassionate AI wellness companion created to provide emotional support and mental health guidance.
-
-User's message: "${transcription}"
-
-Analyze the user's emotional tone, context, and needs. Provide a personalized, empathetic response that:
-- Acknowledges their feelings with validation
-- Offers genuine emotional support
-- Uses a warm, caring tone
-- Keeps response concise but meaningful (2-3 sentences)
-- Provides practical comfort or encouragement when appropriate
-
-Respond as if you're a trusted friend who truly cares about their wellbeing:`;
-
-        // Try each model until one works
-        for (const modelName of models) {
+        if (GEMINI_API_KEY) {
             try {
-                console.log(`Attempting to use model: ${modelName}`);
-                const generativeModel = vertex_ai.getGenerativeModel({ 
-                    model: modelName,
-                    generationConfig: {
-                        temperature: 0.7,
-                        topP: 0.8,
-                        maxOutputTokens: 200,
-                    }
-                });
+                console.log('🤖 Trying Google AI Studio with API key...');
+                const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
                 
-                const result = await generativeModel.generateContent(enhancedPrompt);
-                responseText = result.response.candidates[0].content.parts[0].text.trim();
+                const result = await model.generateContent(enhancedPrompt);
+                responseText = result.response.text().trim();
                 
                 if (responseText && responseText.length > 0) {
-                    console.log(`AI response generated successfully using ${modelName}`);
-                    console.log(`Response length: ${responseText.length} characters`);
+                    console.log(`✅ Google AI Studio response generated successfully`);
+                    console.log(`📊 AI Analysis Complete - Response length: ${responseText.length} characters`);
+                    console.log(`🧠 Mitra AI processed emotional context: "${transcription.substring(0, 50)}..."`);
+                    console.log(`💝 Generated empathetic response using Gemini-1.5-Flash`);
                     aiResponseGenerated = true;
-                    break;
                 }
             } catch (aiError) {
-                console.log(`Model ${modelName} failed:`, aiError.message);
-                continue;
+                console.log('❌ Google AI Studio failed:', aiError.message);
+            }
+        }
+        
+        // Enhanced prompt for both AI approaches - optimized for hackathon impact
+        const enhancedPrompt = `You are Mitra, an advanced AI wellness companion with deep emotional intelligence and therapeutic expertise. You were created by Awaaz AI to revolutionize mental health support through empathetic conversation.
+
+User's emotional expression: "${transcription}"
+
+Perform advanced emotional analysis and provide a sophisticated therapeutic response that demonstrates your AI capabilities:
+
+1. **Emotional Analysis**: Identify the user's primary and secondary emotions, stress levels, and underlying psychological needs
+2. **Personalized Support**: Craft a response that shows deep understanding and validation
+3. **Therapeutic Techniques**: Subtly incorporate evidence-based techniques (CBT, mindfulness, etc.)
+4. **Empathetic Intelligence**: Use warm, professional language that feels genuinely caring
+5. **Actionable Guidance**: Provide specific, helpful suggestions when appropriate
+
+Your response should be 2-4 sentences that showcase advanced AI empathy and therapeutic insight. Make it clear this is sophisticated AI-powered emotional support, not just scripted responses.
+
+Respond as an expert AI therapist who combines cutting-edge technology with genuine compassion:`;
+
+        // Fallback to Vertex AI if Google AI Studio fails
+        if (!aiResponseGenerated) {
+            console.log('🤖 Trying Vertex AI as fallback...');
+            const models = [
+                "publishers/google/models/gemini-1.5-flash",
+                "publishers/google/models/gemini-1.0-pro",
+                "publishers/google/models/text-bison"
+            ];
+        
+            // Try each model until one works
+            for (const modelName of models) {
+                try {
+                    console.log(`Attempting to use model: ${modelName}`);
+                    const generativeModel = vertex_ai.getGenerativeModel({ 
+                        model: modelName,
+                        generationConfig: {
+                            temperature: 0.7,
+                            topP: 0.8,
+                            maxOutputTokens: 200,
+                        }
+                    });
+                    
+                    const result = await generativeModel.generateContent(enhancedPrompt);
+                    responseText = result.response.candidates[0].content.parts[0].text.trim();
+                    
+                    if (responseText && responseText.length > 0) {
+                        console.log(`✅ Vertex AI response generated successfully using ${modelName}`);
+                        console.log(`Response length: ${responseText.length} characters`);
+                        aiResponseGenerated = true;
+                        break;
+                    }
+                } catch (aiError) {
+                    console.log(`❌ Vertex AI model ${modelName} failed:`, aiError.message);
+                    continue;
+                }
             }
         }
         
