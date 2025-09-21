@@ -306,7 +306,6 @@ Built with the belief that technology should support human wellbeing and emotion
 ### **Need Help?**
 - **Issues** - Report bugs or request features via [GitHub Issues](https://github.com/zaid-ali789/mind-mitra/issues)
 - **Discussions** - Join community conversations in [Discussions](https://github.com/zaid-ali789/mind-mitra/discussions)
-- **Documentation** - Check out `WARP.md` for detailed development guidance
 
 ### **Emergency Resources**
 If you're experiencing a mental health crisis, please reach out to:
