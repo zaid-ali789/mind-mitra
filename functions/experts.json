@@ -1,0 +1,102 @@
+{
+  "experts": [
+    {
+      "id": "expert001",
+      "name": "Dr. Sarah Johnson",
+      "specialization": "Crisis Intervention",
+      "email": "sarah.johnson@mentalhealth.local",
+      "phone": "+1-555-CRISIS",
+      "available": true,
+      "languages": ["English"],
+      "timezone": "US/Pacific",
+      "certifications": [
+        "Licensed Clinical Social Worker (LCSW)",
+        "Crisis Intervention Specialist",
+        "Suicide Prevention Coordinator"
+      ],
+      "experience_years": 12,
+      "emergency_contact": true
+    },
+    {
+      "id": "expert002", 
+      "name": "Dr. Michael Chen",
+      "specialization": "Suicide Prevention",
+      "email": "michael.chen@mentalhealth.local",
+      "phone": "+1-555-PREVENT",
+      "available": true,
+      "languages": ["English", "Mandarin"],
+      "timezone": "US/Pacific",
+      "certifications": [
+        "Doctor of Psychology (Psy.D)",
+        "Certified Suicide Prevention Specialist",
+        "QPR (Question, Persuade, Refer) Trainer"
+      ],
+      "experience_years": 8,
+      "emergency_contact": true
+    },
+    {
+      "id": "expert003",
+      "name": "Dr. Priya Sharma", 
+      "specialization": "Trauma & PTSD",
+      "email": "priya.sharma@mentalhealth.local",
+      "phone": "+1-555-TRAUMA",
+      "available": true,
+      "languages": ["English", "Hindi"],
+      "timezone": "Asia/Kolkata",
+      "certifications": [
+        "Licensed Professional Counselor (LPC)",
+        "EMDR Certified Therapist", 
+        "Trauma-Informed Care Specialist"
+      ],
+      "experience_years": 15,
+      "emergency_contact": false
+    },
+    {
+      "id": "expert004",
+      "name": "Dr. James Wilson",
+      "specialization": "Anxiety & Depression",
+      "email": "james.wilson@mentalhealth.local", 
+      "phone": "+1-555-ANXIETY",
+      "available": true,
+      "languages": ["English", "Spanish"],
+      "timezone": "US/Eastern",
+      "certifications": [
+        "Licensed Clinical Psychologist",
+        "Cognitive Behavioral Therapy (CBT) Specialist",
+        "Mindfulness-Based Therapy Certified"
+      ],
+      "experience_years": 10,
+      "emergency_contact": false
+    },
+    {
+      "id": "expert005",
+      "name": "Dr. Maria Rodriguez",
+      "specialization": "Adolescent Mental Health",
+      "email": "maria.rodriguez@mentalhealth.local",
+      "phone": "+1-555-YOUTH", 
+      "available": false,
+      "languages": ["English", "Spanish"],
+      "timezone": "US/Central",
+      "certifications": [
+        "Licensed Marriage and Family Therapist (LMFT)",
+        "Adolescent Mental Health Specialist",
+        "Play Therapy Certified"
+      ],
+      "experience_years": 6,
+      "emergency_contact": false
+    }
+  ],
+  "alert_settings": {
+    "email_enabled": true,
+    "sms_enabled": true,
+    "escalation_minutes": 15,
+    "backup_contacts": [
+      {
+        "name": "Crisis Hotline Director",
+        "email": "director@crisishotline.local",
+        "phone": "+1-555-DIRECTOR"
+      }
+    ]
+  },
+  "last_updated": "2024-01-21T00:00:00Z"
+}

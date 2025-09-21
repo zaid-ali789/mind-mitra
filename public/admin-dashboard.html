@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mitra Admin Dashboard - Crisis Management System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .admin-header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .admin-header p {
+            opacity: 0.9;
+            font-size: 1.2em;
+        }
+
+        .admin-badge {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            background: #e74c3c;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .admin-content {
+            padding: 40px;
+        }
+
+        .dashboard-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .tab.active {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: #e9ecef;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .metric-card.critical {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3);
+        }
+
+        .metric-card.warning {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            box-shadow: 0 10px 30px rgba(243, 156, 18, 0.3);
+        }
+
+        .metric-card.success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.3);
+        }
+
+        .metric-number {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .metric-label {
+            font-size: 1.1em;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-trend {
+            font-size: 0.9em;
+            margin-top: 8px;
+            opacity: 0.8;
+        }
+
+        .expert-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .expert-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .expert-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .expert-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .expert-info h3 {
+            color: #2c3e50;
+            font-size: 1.3em;
+            margin-bottom: 5px;
+        }
+
+        .expert-specialization {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .expert-status {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-available {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-busy {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .expert-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .expert-stat {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .expert-stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .expert-stat-label {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .expert-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #34495e;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #e67e22;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .alerts-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .table-header {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .table-content {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .alert-item {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .alert-item:hover {
+            background: #f8f9fa;
+        }
+
+        .alert-item:last-child {
+            border-bottom: none;
+        }
+
+        .alert-info {
+            flex: 1;
+        }
+
+        .alert-time {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .alert-message {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .alert-level-badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.7em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .level-critical {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .level-high {
+            background: #f39c12;
+            color: white;
+        }
+
+        .level-moderate {
+            background: #f1c40f;
+            color: #333;
+        }
+
+        .alert-status {
+            text-align: right;
+        }
+
+        .status-resolved {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .status-in-progress {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .system-health {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .health-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+
+        .health-card h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .health-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .health-metric:last-child {
+            margin-bottom: 0;
+        }
+
+        .health-value {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .health-good {
+            color: #27ae60;
+        }
+
+        .health-warning {
+            color: #f39c12;
+        }
+
+        .health-critical {
+            color: #e74c3c;
+        }
+
+        @media (max-width: 768px) {
+            .admin-content {
+                padding: 20px;
+            }
+
+            .admin-header {
+                padding: 20px;
+            }
+
+            .admin-header h1 {
+                font-size: 2em;
+            }
+
+            .dashboard-tabs {
+                flex-direction: column;
+            }
+
+            .expert-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .expert-stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .alert-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div class="admin-badge">Admin</div>
+            <h1>🔧 Mitra Admin Dashboard</h1>
+            <p>Crisis Management System Oversight & Analytics</p>
+        </div>
+
+        <div class="admin-content">
+            <!-- Navigation Tabs -->
+            <div class="dashboard-tabs">
+                <button class="tab active" onclick="showTab('overview')">📊 Overview</button>
+                <button class="tab" onclick="showTab('experts')">👨‍⚕️ Experts</button>
+                <button class="tab" onclick="showTab('alerts')">🚨 Alert History</button>
+                <button class="tab" onclick="showTab('system')">⚙️ System Health</button>
+            </div>
+
+            <!-- Overview Tab -->
+            <div class="tab-content active" id="overview">
+                <div class="metrics-grid">
+                    <div class="metric-card critical">
+                        <div class="metric-number">7</div>
+                        <div class="metric-label">Active Critical Alerts</div>
+                        <div class="metric-trend">↑ 2 since last hour</div>
+                    </div>
+                    <div class="metric-card warning">
+                        <div class="metric-number">23</div>
+                        <div class="metric-label">Pending Cases</div>
+                        <div class="metric-trend">↓ 5 since yesterday</div>
+                    </div>
+                    <div class="metric-card success">
+                        <div class="metric-number">156</div>
+                        <div class="metric-label">Cases Resolved Today</div>
+                        <div class="metric-trend">↑ 12% from yesterday</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-number">4.2</div>
+                        <div class="metric-label">Avg Response Time (min)</div>
+                        <div class="metric-trend">↓ 0.8 min improvement</div>
+                    </div>
+                    <div class="metric-card success">
+                        <div class="metric-number">94.7%</div>
+                        <div class="metric-label">Resolution Rate</div>
+                        <div class="metric-trend">↑ 2.3% this week</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-number">1,247</div>
+                        <div class="metric-label">Total Cases This Month</div>
+                        <div class="metric-trend">↑ 18% from last month</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Experts Tab -->
+            <div class="tab-content" id="experts">
+                <div class="expert-grid">
+                    <div class="expert-card">
+                        <div class="expert-header">
+                            <div class="expert-info">
+                                <h3>Dr. Sarah Johnson</h3>
+                                <div class="expert-specialization">Crisis Intervention Specialist</div>
+                            </div>
+                            <div class="expert-status status-available">Available</div>
+                        </div>
+                        <div class="expert-stats">
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">23</div>
+                                <div class="expert-stat-label">Active Cases</div>
+                            </div>
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">89</div>
+                                <div class="expert-stat-label">Resolved Today</div>
+                            </div>
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">3.2</div>
+                                <div class="expert-stat-label">Avg Response (min)</div>
+                            </div>
+                        </div>
+                        <div class="expert-actions">
+                            <button class="btn btn-primary">📊 View Details</button>
+                            <button class="btn btn-warning">📧 Send Message</button>
+                        </div>
+                    </div>
+
+                    <div class="expert-card">
+                        <div class="expert-header">
+                            <div class="expert-info">
+                                <h3>Dr. Michael Chen</h3>
+                                <div class="expert-specialization">Suicide Prevention</div>
+                            </div>
+                            <div class="expert-status status-busy">In Session</div>
+                        </div>
+                        <div class="expert-stats">
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">18</div>
+                                <div class="expert-stat-label">Active Cases</div>
+                            </div>
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">67</div>
+                                <div class="expert-stat-label">Resolved Today</div>
+                            </div>
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">2.8</div>
+                                <div class="expert-stat-label">Avg Response (min)</div>
+                            </div>
+                        </div>
+                        <div class="expert-actions">
+                            <button class="btn btn-primary">📊 View Details</button>
+                            <button class="btn btn-warning">📧 Send Message</button>
+                        </div>
+                    </div>
+
+                    <div class="expert-card">
+                        <div class="expert-header">
+                            <div class="expert-info">
+                                <h3>Dr. Priya Sharma</h3>
+                                <div class="expert-specialization">Trauma & PTSD</div>
+                            </div>
+                            <div class="expert-status status-available">Available</div>
+                        </div>
+                        <div class="expert-stats">
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">15</div>
+                                <div class="expert-stat-label">Active Cases</div>
+                            </div>
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">45</div>
+                                <div class="expert-stat-label">Resolved Today</div>
+                            </div>
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">4.1</div>
+                                <div class="expert-stat-label">Avg Response (min)</div>
+                            </div>
+                        </div>
+                        <div class="expert-actions">
+                            <button class="btn btn-primary">📊 View Details</button>
+                            <button class="btn btn-warning">📧 Send Message</button>
+                        </div>
+                    </div>
+
+                    <div class="expert-card">
+                        <div class="expert-header">
+                            <div class="expert-info">
+                                <h3>Dr. James Wilson</h3>
+                                <div class="expert-specialization">Anxiety & Depression</div>
+                            </div>
+                            <div class="expert-status status-offline">Off Duty</div>
+                        </div>
+                        <div class="expert-stats">
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">0</div>
+                                <div class="expert-stat-label">Active Cases</div>
+                            </div>
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">34</div>
+                                <div class="expert-stat-label">Resolved Today</div>
+                            </div>
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">3.7</div>
+                                <div class="expert-stat-label">Avg Response (min)</div>
+                            </div>
+                        </div>
+                        <div class="expert-actions">
+                            <button class="btn btn-primary">📊 View Details</button>
+                            <button class="btn btn-danger">🚨 Emergency Contact</button>
+                        </div>
+                    </div>
+
+                    <div class="expert-card">
+                        <div class="expert-header">
+                            <div class="expert-info">
+                                <h3>Dr. Maria Rodriguez</h3>
+                                <div class="expert-specialization">Adolescent Mental Health</div>
+                            </div>
+                            <div class="expert-status status-available">Available</div>
+                        </div>
+                        <div class="expert-stats">
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">12</div>
+                                <div class="expert-stat-label">Active Cases</div>
+                            </div>
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">28</div>
+                                <div class="expert-stat-label">Resolved Today</div>
+                            </div>
+                            <div class="expert-stat">
+                                <div class="expert-stat-number">5.2</div>
+                                <div class="expert-stat-label">Avg Response (min)</div>
+                            </div>
+                        </div>
+                        <div class="expert-actions">
+                            <button class="btn btn-primary">📊 View Details</button>
+                            <button class="btn btn-warning">📧 Send Message</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alert History Tab -->
+            <div class="tab-content" id="alerts">
+                <div class="alerts-table">
+                    <div class="table-header">
+                        <h2>🚨 Recent Crisis Alerts</h2>
+                    </div>
+                    <div class="table-content">
+                        <div class="alert-item">
+                            <div class="alert-info">
+                                <div class="alert-time">2:43 PM - Today</div>
+                                <div class="alert-message">"I want to kill myself. I have a plan and nobody would miss me anyway."</div>
+                                <span class="alert-level-badge level-critical">Critical</span>
+                            </div>
+                            <div class="alert-status">
+                                <div class="status-in-progress">In Progress</div>
+                                <div style="font-size: 0.8em; color: #666; margin-top: 5px;">Dr. Sarah Johnson</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-item">
+                            <div class="alert-info">
+                                <div class="alert-time">1:28 PM - Today</div>
+                                <div class="alert-message">"I've been cutting myself because I hate myself so much. I can't take it anymore."</div>
+                                <span class="alert-level-badge level-critical">Critical</span>
+                            </div>
+                            <div class="alert-status">
+                                <div class="status-resolved">Resolved</div>
+                                <div style="font-size: 0.8em; color: #666; margin-top: 5px;">Dr. Michael Chen</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-item">
+                            <div class="alert-info">
+                                <div class="alert-time">12:15 PM - Today</div>
+                                <div class="alert-message">"I'm having a panic attack and can't breathe. Everything is falling apart."</div>
+                                <span class="alert-level-badge level-high">High</span>
+                            </div>
+                            <div class="alert-status">
+                                <div class="status-resolved">Resolved</div>
+                                <div style="font-size: 0.8em; color: #666; margin-top: 5px;">Dr. Priya Sharma</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-item">
+                            <div class="alert-info">
+                                <div class="alert-time">11:42 AM - Today</div>
+                                <div class="alert-message">"I feel completely hopeless about my future. Nothing seems to matter anymore."</div>
+                                <span class="alert-level-badge level-moderate">Moderate</span>
+                            </div>
+                            <div class="alert-status">
+                                <div class="status-resolved">Resolved</div>
+                                <div style="font-size: 0.8em; color: #666; margin-top: 5px;">Dr. James Wilson</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-item">
+                            <div class="alert-info">
+                                <div class="alert-time">10:33 AM - Today</div>
+                                <div class="alert-message">"I'm completely isolated from everyone. No one understands what I'm going through."</div>
+                                <span class="alert-level-badge level-moderate">Moderate</span>
+                            </div>
+                            <div class="alert-status">
+                                <div class="status-resolved">Resolved</div>
+                                <div style="font-size: 0.8em; color: #666; margin-top: 5px;">Dr. Maria Rodriguez</div>
+                            </div>
+                        </div>
+
+                        <div class="alert-item">
+                            <div class="alert-info">
+                                <div class="alert-time">9:18 AM - Today</div>
+                                <div class="alert-message">"I want to disappear forever. Everyone would be better off without me."</div>
+                                <span class="alert-level-badge level-critical">Critical</span>
+                            </div>
+                            <div class="alert-status">
+                                <div class="status-resolved">Resolved</div>
+                                <div style="font-size: 0.8em; color: #666; margin-top: 5px;">Dr. Sarah Johnson</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Health Tab -->
+            <div class="tab-content" id="system">
+                <div class="system-health">
+                    <div class="health-card">
+                        <h3>🤖 AI System Performance</h3>
+                        <div class="health-metric">
+                            <span>Crisis Detection Accuracy</span>
+                            <span class="health-value health-good">94.7%</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>Response Time</span>
+                            <span class="health-value health-good">0.02ms</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>API Availability</span>
+                            <span class="health-value health-good">99.98%</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>Error Rate</span>
+                            <span class="health-value health-good">0.23%</span>
+                        </div>
+                    </div>
+
+                    <div class="health-card">
+                        <h3>📊 Database & Storage</h3>
+                        <div class="health-metric">
+                            <span>Database Connection</span>
+                            <span class="health-value health-good">Connected</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>Storage Usage</span>
+                            <span class="health-value health-warning">78%</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>Backup Status</span>
+                            <span class="health-value health-good">Up to date</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>Query Performance</span>
+                            <span class="health-value health-good">12ms avg</span>
+                        </div>
+                    </div>
+
+                    <div class="health-card">
+                        <h3>🔔 Alert System</h3>
+                        <div class="health-metric">
+                            <span>Email Service</span>
+                            <span class="health-value health-good">Operational</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>SMS Service</span>
+                            <span class="health-value health-warning">Degraded</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>Push Notifications</span>
+                            <span class="health-value health-good">Active</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>Alert Delivery Rate</span>
+                            <span class="health-value health-good">98.5%</span>
+                        </div>
+                    </div>
+
+                    <div class="health-card">
+                        <h3>👥 Expert Network</h3>
+                        <div class="health-metric">
+                            <span>Online Experts</span>
+                            <span class="health-value health-good">4/5</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>Avg Response Time</span>
+                            <span class="health-value health-good">4.2 min</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>Case Load Distribution</span>
+                            <span class="health-value health-warning">Uneven</span>
+                        </div>
+                        <div class="health-metric">
+                            <span>Expert Satisfaction</span>
+                            <span class="health-value health-good">4.8/5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Simulate real-time updates
+        function updateMetrics() {
+            // This would normally fetch real data from your backend
+            console.log('🔄 Updating admin dashboard metrics...');
+        }
+
+        // Add interactivity to buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('btn')) {
+                const action = e.target.textContent.trim();
+                
+                if (action.includes('View Details')) {
+                    alert('📊 Opening detailed expert performance report...\n\nThis would show:\n• Case history\n• Response time analytics\n• User feedback scores\n• Performance trends');
+                } else if (action.includes('Send Message')) {
+                    alert('📧 Opening message composer...\n\nSend instructions, updates, or feedback to the expert.');
+                } else if (action.includes('Emergency Contact')) {
+                    alert('🚨 Initiating emergency contact protocol...\n\nThis would:\n• Send immediate alert to off-duty expert\n• Escalate to backup experts\n• Notify emergency contacts');
+                }
+            }
+        });
+
+        // Update metrics every 30 seconds
+        setInterval(updateMetrics, 30000);
+
+        // Simulate real-time data updates
+        function simulateRealTimeUpdates() {
+            const criticalAlerts = document.querySelector('.metric-card.critical .metric-number');
+            const pendingCases = document.querySelector('.metric-card.warning .metric-number');
+            
+            // Randomly update some metrics to show live data
+            if (Math.random() > 0.7) {
+                const currentCritical = parseInt(criticalAlerts.textContent);
+                const change = Math.random() > 0.5 ? 1 : -1;
+                const newValue = Math.max(0, currentCritical + change);
+                criticalAlerts.textContent = newValue;
+            }
+        }
+
+        // Update every 10 seconds for demo
+        setInterval(simulateRealTimeUpdates, 10000);
+
+        console.log('🔧 Mitra Admin Dashboard loaded successfully!');
+        console.log('📊 Real-time monitoring active for crisis management system.');
+    </script>
+</body>
+</html>
