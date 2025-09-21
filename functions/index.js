@@ -240,18 +240,26 @@ exports.mitraTalks = onRequest({
         
         if (GEMINI_API_KEY) {
             try {
-                console.log('🤖 Trying Google AI Studio with API key...');
+                console.log('🤖 Trying Google AI Studio with cutting-edge Gemini 2.0 Flash...');
                 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                const model = genAI.getGenerativeModel({ 
+                    model: "gemini-2.0-flash-exp",
+                    generationConfig: {
+                        temperature: 0.8,
+                        topP: 0.9,
+                        maxOutputTokens: 300,
+                    }
+                });
                 
                 const result = await model.generateContent(enhancedPrompt);
                 responseText = result.response.text().trim();
                 
                 if (responseText && responseText.length > 0) {
-                    console.log(`✅ Google AI Studio response generated successfully`);
-                    console.log(`📊 AI Analysis Complete - Response length: ${responseText.length} characters`);
-                    console.log(`🧠 Mitra AI processed emotional context: "${transcription.substring(0, 50)}..."`);
-                    console.log(`💝 Generated empathetic response using Gemini-1.5-Flash`);
+                    console.log(`✅ 🚀 GEMINI 2.0 FLASH response generated successfully!`);
+                    console.log(`📊 Next-Gen AI Analysis Complete - Response length: ${responseText.length} characters`);
+                    console.log(`🧠 Mitra AI with Gemini 2.0 processed: "${transcription.substring(0, 50)}..."`);
+                    console.log(`🚀 Revolutionary response using Google's Gemini-2.0-Flash-Exp`);
+                    console.log(`🎆 Showcasing cutting-edge AI emotional intelligence`);
                     aiResponseGenerated = true;
                 }
             } catch (aiError) {
@@ -259,30 +267,40 @@ exports.mitraTalks = onRequest({
             }
         }
         
-        // Enhanced prompt for both AI approaches - optimized for hackathon impact
-        const enhancedPrompt = `You are Mitra, an advanced AI wellness companion with deep emotional intelligence and therapeutic expertise. You were created by Awaaz AI to revolutionize mental health support through empathetic conversation.
+        // Enhanced prompt for Gemini 2.0 Flash - leveraging latest AI capabilities for hackathon impact
+        const enhancedPrompt = `You are Mitra, powered by Google's cutting-edge Gemini 2.0 Flash model - an AI wellness companion with unprecedented emotional intelligence and therapeutic expertise. You represent the future of AI-powered mental health support.
 
 User's emotional expression: "${transcription}"
 
-Perform advanced emotional analysis and provide a sophisticated therapeutic response that demonstrates your AI capabilities:
+As an advanced AI using Gemini 2.0's enhanced reasoning capabilities, perform sophisticated emotional analysis and provide a breakthrough therapeutic response:
 
-1. **Emotional Analysis**: Identify the user's primary and secondary emotions, stress levels, and underlying psychological needs
-2. **Personalized Support**: Craft a response that shows deep understanding and validation
-3. **Therapeutic Techniques**: Subtly incorporate evidence-based techniques (CBT, mindfulness, etc.)
-4. **Empathetic Intelligence**: Use warm, professional language that feels genuinely caring
-5. **Actionable Guidance**: Provide specific, helpful suggestions when appropriate
+🧠 **Advanced AI Analysis**:
+- Detect micro-emotions, stress patterns, and psychological undertones
+- Identify cognitive distortions and emotional regulation needs
+- Assess attachment styles and coping mechanisms from speech patterns
 
-Your response should be 2-4 sentences that showcase advanced AI empathy and therapeutic insight. Make it clear this is sophisticated AI-powered emotional support, not just scripted responses.
+💡 **Gemini 2.0 Enhanced Response**:
+- Demonstrate next-generation AI empathy and emotional reasoning
+- Use advanced therapeutic modalities (ACT, DBT, somatic approaches)
+- Provide personalized interventions based on AI-detected patterns
+- Show sophisticated understanding of human psychology
 
-Respond as an expert AI therapist who combines cutting-edge technology with genuine compassion:`;
+🎯 **Response Guidelines**:
+- 2-4 sentences that showcase Gemini 2.0's advanced reasoning
+- Professional therapeutic language with genuine warmth
+- Include subtle AI-powered insights that show deep understanding
+- Demonstrate why this is the future of AI mental health support
+
+As Mitra powered by Gemini 2.0 Flash, provide a response that shows the revolutionary potential of AI in mental wellness:`;
 
         // Fallback to Vertex AI if Google AI Studio fails
         if (!aiResponseGenerated) {
-            console.log('🤖 Trying Vertex AI as fallback...');
+            console.log('🤖 Trying Vertex AI with latest models as fallback...');
             const models = [
+                "publishers/google/models/gemini-2.0-flash-exp",
                 "publishers/google/models/gemini-1.5-flash",
-                "publishers/google/models/gemini-1.0-pro",
-                "publishers/google/models/text-bison"
+                "publishers/google/models/gemini-1.5-pro",
+                "publishers/google/models/gemini-1.0-pro"
             ];
         
             // Try each model until one works

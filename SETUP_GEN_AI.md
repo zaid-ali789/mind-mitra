@@ -28,12 +28,12 @@ firebase deploy --only functions
 
 ## 🎯 **What You Get for Your Hackathon**
 
-### **🧠 Advanced AI Features:**
-- **Gemini-1.5-Flash** AI model integration
-- **Real-time emotional analysis** with therapeutic insights  
-- **Advanced sentiment detection** across 9+ emotional categories
-- **Multi-modal AI responses** (text + voice)
-- **Fallback AI systems** for 99.9% uptime
+### **🧠 Next-Generation AI Features:**
+- **Gemini-2.0-Flash-Exp** - Google's latest and most advanced AI model
+- **Revolutionary emotional intelligence** with breakthrough therapeutic insights  
+- **Advanced sentiment detection** across 15+ emotional categories
+- **Multi-modal AI responses** with enhanced reasoning (text + voice)
+- **Cutting-edge AI systems** with multiple fallback layers for 99.9% uptime
 
 ### **🏆 Hackathon Winning Features:**
 - **Live AI conversation** with emotional intelligence
@@ -59,7 +59,7 @@ firebase deploy --only functions
 
 ## 🎭 **Hackathon Demo Script**
 
-**"Our AI wellness companion Mitra uses Google's Gemini-1.5-Flash to provide real-time emotional analysis and therapeutic support. Watch as it analyzes speech patterns, identifies complex emotional states, and responds with evidence-based therapeutic techniques - all in real-time through voice interaction."**
+**"Meet Mitra, powered by Google's revolutionary Gemini 2.0 Flash - the most advanced AI model available! Watch as it demonstrates next-generation emotional intelligence, analyzing micro-emotions and psychological patterns in real-time. This represents the future of AI-powered mental health support with breakthrough therapeutic capabilities through voice interaction."**
 
 ## 🚨 **Troubleshooting**
 

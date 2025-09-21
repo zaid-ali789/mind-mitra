@@ -1,4 +1,4 @@
-# 🤗 Mitra - Your Empathetic Wellness Companion
+# 🤗 Mind Mitra - Your Empathetic Wellness Companion
 
 <div align="center">
 
