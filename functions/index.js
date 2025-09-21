@@ -1,6 +1,7 @@
 const {onRequest} = require("firebase-functions/v2/https");
 const {setGlobalOptions} = require("firebase-functions/v2");
 const { SpeechClient } = require("@google-cloud/speech");
+const { TextToSpeechClient } = require("@google-cloud/text-to-speech");
 const { VertexAI } = require("@google-cloud/vertexai");
 
 // Set global options for the function region
@@ -8,6 +9,7 @@ setGlobalOptions({ region: "us-central1" });
 
 // Initialize clients
 const speechClient = new SpeechClient();
+const textToSpeechClient = new TextToSpeechClient();
 const vertex_ai = new VertexAI({ project: "fine-phenomenon-456517-q2", location: "us-central1" });
 
 // Fallback empathetic responses for when AI is not available
@@ -111,21 +113,95 @@ exports.mitraTalks = onRequest({
 
         console.log("Transcribed text:", transcription);
 
-        // Try to use AI, but fall back to predefined responses if it fails
+        // Try different AI models with enhanced prompts
         let responseText;
-        try {
-            const generativeModel = vertex_ai.getGenerativeModel({ model: "gemini-1.5-flash" });
-            const prompt = `You are Mitra, an empathetic wellness companion. A user said this: "${transcription}". Respond in a short, kind, and supportive way.`;
-            const result = await generativeModel.generateContent(prompt);
-            responseText = result.response.candidates[0].content.parts[0].text;
-            console.log("AI response generated successfully");
-        } catch (aiError) {
-            console.log("AI model not available, using fallback response:", aiError.message);
-            // Use a contextual fallback response based on transcription
+        let aiResponseGenerated = false;
+        
+        const models = [
+            "gemini-1.5-flash-002",
+            "gemini-1.5-flash-001",
+            "gemini-1.0-pro-002",
+            "gemini-1.0-pro-001"
+        ];
+        
+        const enhancedPrompt = `You are Mitra, a compassionate AI wellness companion created to provide emotional support and mental health guidance.
+
+User's message: "${transcription}"
+
+Analyze the user's emotional tone, context, and needs. Provide a personalized, empathetic response that:
+- Acknowledges their feelings with validation
+- Offers genuine emotional support
+- Uses a warm, caring tone
+- Keeps response concise but meaningful (2-3 sentences)
+- Provides practical comfort or encouragement when appropriate
+
+Respond as if you're a trusted friend who truly cares about their wellbeing:`;
+
+        // Try each model until one works
+        for (const modelName of models) {
+            try {
+                console.log(`Attempting to use model: ${modelName}`);
+                const generativeModel = vertex_ai.getGenerativeModel({ 
+                    model: modelName,
+                    generationConfig: {
+                        temperature: 0.7,
+                        topP: 0.8,
+                        maxOutputTokens: 200,
+                    }
+                });
+                
+                const result = await generativeModel.generateContent(enhancedPrompt);
+                responseText = result.response.candidates[0].content.parts[0].text.trim();
+                
+                if (responseText && responseText.length > 0) {
+                    console.log(`AI response generated successfully using ${modelName}`);
+                    console.log(`Response length: ${responseText.length} characters`);
+                    aiResponseGenerated = true;
+                    break;
+                }
+            } catch (aiError) {
+                console.log(`Model ${modelName} failed:`, aiError.message);
+                continue;
+            }
+        }
+        
+        // If no AI model worked, use contextual fallback
+        if (!aiResponseGenerated) {
+            console.log("All AI models failed, using contextual fallback response");
             responseText = getContextualResponse(transcription);
         }
 
-        res.status(200).json({responseText: responseText});
+        // Generate audio response using Text-to-Speech
+        let audioContent = null;
+        try {
+            console.log("Generating audio response...");
+            const ttsRequest = {
+                input: { text: responseText },
+                voice: {
+                    languageCode: 'en-US',
+                    name: 'en-US-Standard-F', // Standard female voice
+                    ssmlGender: 'FEMALE'
+                },
+                audioConfig: {
+                    audioEncoding: 'MP3',
+                    speakingRate: 0.9, // Slightly slower for empathy
+                    volumeGainDb: 0.0
+                }
+            };
+            
+            const [ttsResponse] = await textToSpeechClient.synthesizeSpeech(ttsRequest);
+            audioContent = ttsResponse.audioContent.toString('base64');
+            console.log("Audio response generated successfully");
+        } catch (ttsError) {
+            console.log("Text-to-speech failed:", ttsError.message);
+            // Continue without audio - text response will still work
+        }
+
+        res.status(200).json({
+            responseText: responseText,
+            audioContent: audioContent,
+            aiGenerated: aiResponseGenerated
+        });
     } catch (error) {
         console.error("ERROR in mitraTalks function:", error);
         res.status(500).json({error: "An error occurred while processing the request."});
