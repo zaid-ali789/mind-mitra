@@ -19,6 +19,12 @@
 
 ## 🌟 Features
 
+### 🌍 **Multilingual Support** 🆕
+- **Automatic language detection** - Speaks 15+ languages automatically
+- **Native voice responses** - Mitra responds in your language
+- **No manual selection** - Just speak, we detect the language
+- **Global accessibility** - English, Spanish, French, German, Hindi, Chinese, Japanese, Arabic, and more!
+
 ### 🎤 **Voice Interaction**
 - **Push-to-talk interface** - Hold the microphone button to speak
 - **Real-time audio processing** - Instant speech-to-text conversion
@@ -252,8 +258,8 @@ We welcome contributions to make Mitra even better!
 ## 📋 Roadmap
 
 ### **Planned Features**
-- [ ] **Multi-language support** - Support for different languages
-- [ ] **Voice response** - Text-to-speech for Mitra's replies
+- [x] **Multi-language support** - Support for 15+ languages with auto-detection ✅
+- [x] **Voice response** - Text-to-speech for Mitra's replies ✅
 - [ ] **Conversation history** - Optional session memory
 - [ ] **Wellness resources** - Links to helpful content
 - [ ] **Mood tracking** - Optional emotional state tracking

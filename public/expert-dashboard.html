@@ -329,8 +329,8 @@
             <!-- Statistics Section -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-number">3</div>
-                    <div class="stat-label">Active Alerts</div>
+                    <div class="stat-number" id="statActiveAlerts">3</div
+                    ><div class="stat-label">Active Alerts</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-number">12</div>
@@ -347,7 +347,7 @@
             </div>
 
             <!-- Active Alerts Section -->
-            <div class="alert-section">
+            <div class="alert-section" id="activeAlertsSection">
                 <h2 class="section-title">🚨 Active Crisis Alerts</h2>
                 
                 <!-- Critical Alert -->
@@ -428,6 +428,12 @@
     </div>
 
     <script>
+        // Environment detection for Functions base URL
+        const isDevelopment = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+        const functionsBase = isDevelopment
+            ? 'http://127.0.0.1:5001/fine-phenomenon-456517-q2/us-central1'
+            : 'https://us-central1-fine-phenomenon-456517-q2.cloudfunctions.net';
+
         // Toggle availability status
         document.getElementById('availabilityToggle').addEventListener('click', function() {
             this.classList.toggle('active');
@@ -441,41 +447,93 @@
             }
         });
 
-        // Simulate real-time updates
-        function simulateRealTimeUpdates() {
-            // Update timestamps
-            const timestamps = document.querySelectorAll('.alert-timestamp');
-            timestamps.forEach((timestamp, index) => {
-                const minutes = (index + 1) * 2 + Math.floor(Date.now() / 60000) % 10;
-                timestamp.textContent = `${minutes} minutes ago`;
-            });
+        function levelClass(level) {
+            if (!level) return 'alert-moderate';
+            switch (level) {
+                case 'critical': return 'alert-critical';
+                case 'high': return 'alert-high';
+                default: return 'alert-moderate';
+            }
         }
 
-        // Update every minute
-        setInterval(simulateRealTimeUpdates, 60000);
-
-        // Alert action handlers
-        document.addEventListener('click', function(e) {
-            if (e.target.classList.contains('btn')) {
-                const action = e.target.textContent.trim();
-                
-                if (action.includes('Contact Immediately') || action.includes('Call User')) {
-                    alert('🚨 Initiating emergency contact protocol...\n\nThis would connect you directly with the user in crisis.');
-                } else if (action.includes('Send Email') || action.includes('Send Support Message')) {
-                    alert('📧 Sending supportive message...\n\nA compassionate follow-up message has been sent to the user.');
-                } else if (action.includes('Mark as Contacted')) {
-                    e.target.textContent = '✅ Contacted';
-                    e.target.classList.remove('btn-success');
-                    e.target.classList.add('btn-secondary');
-                    e.target.style.background = '#666';
-                    e.target.disabled = true;
-                }
+        function badgeClass(level) {
+            if (!level) return 'level-moderate';
+            switch (level) {
+                case 'critical': return 'level-critical';
+                case 'high': return 'level-high';
+                default: return 'level-moderate';
             }
-        });
+        }
 
-        // Add some interactivity for demo
-        console.log('🧠 Mitra Expert Dashboard loaded successfully!');
-        console.log('📊 This dashboard would connect to real-time crisis detection data in production.');
+        function formatTimestamp(ts) {
+            try {
+                if (!ts) return 'Just now';
+                if (typeof ts === 'string') return ts;
+                if (ts._seconds) {
+                    const d = new Date(ts._seconds * 1000);
+                    return d.toLocaleString();
+                }
+            } catch (e) {}
+            return 'Just now';
+        }
+
+        function renderAlerts(alerts) {
+            const section = document.getElementById('activeAlertsSection');
+            if (!section) return;
+
+            const countEl = document.getElementById('statActiveAlerts');
+            if (countEl) countEl.textContent = alerts.length;
+
+            if (!alerts || alerts.length === 0) {
+                section.innerHTML = '<div class="no-alerts">No active alerts at the moment.</div>';
+                return;
+            }
+
+            const html = alerts.map(a => {
+                const level = (a.crisisAnalysis && a.crisisAnalysis.riskLevel) || a.riskLevel || 'moderate';
+                const msg = a.userInput || a.message || '(no message)';
+                const ts = formatTimestamp(a.createdAt || a.timestamp);
+                const indicators = (a.crisisAnalysis && a.crisisAnalysis.indicators) || [];
+                const indicatorsHtml = indicators.slice(0, 4).map(i => `<span class="indicator">${i}</span>`).join('');
+                return `
+                    <div class="alert-card ${levelClass(level)}">
+                        <div class="alert-header">
+                            <span class="alert-level ${badgeClass(level)}">${level.charAt(0).toUpperCase() + level.slice(1)}</span>
+                            <span class="alert-timestamp">${ts}</span>
+                        </div>
+                        <div class="alert-message">${msg.replace(/</g, '&lt;')}</div>
+                        ${indicatorsHtml ? `<div class="alert-indicators">${indicatorsHtml}</div>` : ''}
+                        <div class="alert-actions">
+                            <button class="btn btn-primary">📞 Call User</button>
+                            <button class="btn btn-primary">💬 Send Support Message</button>
+                            <button class="btn btn-success">✅ Mark as Contacted</button>
+                        </div>
+                    </div>`;
+            }).join('');
+
+            section.innerHTML = html;
+        }
+
+        async function fetchAlerts() {
+            try {
+                const res = await fetch(`${functionsBase}/getCrisisAlerts`, {
+                    headers: { 'Accept': 'application/json' }
+                });
+                const data = await res.json();
+                if (!res.ok || !data || !Array.isArray(data.alerts)) throw new Error('Bad response');
+                renderAlerts(data.alerts);
+            } catch (e) {
+                console.warn('Failed to load alerts:', e.message);
+            }
+        }
+
+        function init() {
+            fetchAlerts();
+            setInterval(fetchAlerts, 10000); // poll every 10s
+            console.log('🧠 Mitra Expert Dashboard live updates enabled');
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
